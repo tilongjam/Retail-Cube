@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<style>
+			/* Ensuring consistent box-sizing */
+			* {
+				box-sizing: border-box;
+			}
+	
+			/* Stretching the card elements */
+			.stretch-card {
+				display: flex;
+				align-items: stretch;
+			}
+	
+			/* Example styling to ensure full-width for smaller screens */
+			@media (max-width: 768px) {
+				.col-md-5, .col-md-2 {
+					width: 100%;
+				}
+			}
+		</style>
+		<!-- Required meta tags -->
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, shrink-to-fit=no"
+		/>
+		
+		<title>Dashboard</title>
+		{% load static %}
+		<!-- plugins:css -->
+		<link
+			rel="stylesheet"
+			href="{% static 'vendors/mdi/css/materialdesignicons.min.css' %}"
+		/>
+		<link
+			rel="stylesheet"
+			href="{% static 'vendors/css/vendor.bundle.base.css' %}"
+		/>
+		<!-- endinject -->
+		<!-- Plugin css for this page -->
+		<link
+			rel="stylesheet"
+			href="{% static 'vendors/jvectormap/jquery-jvectormap.css' %}"
+		/>
+		<link
+			rel="stylesheet"
+			href="{% static 'vendors/flag-icon-css/css/flag-icon.min.css' %}"
+		/>
+		<link
+			rel="stylesheet"
+			href="{% static 'vendors/owl-carousel-2/owl.carousel.min.css' %}"
+		/>
+		<link
+			rel="stylesheet"
+			href="{% static 'vendors/owl-carousel-2/owl.theme.default.min.css' %}"
+		/>
+		<link
+			rel="stylesheet"
+			href="{% static 'vendors/select2/select2.min.css' %}"
+		/>
+		<link
+			rel="stylesheet"
+			href="{% static 'vendors/select2-bootstrap-theme/select2-bootstrap.min.css' %}"
+		/>
+		<!-- jquery UI -->
+		<link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}" />
+		
+
+		{% comment %} Font Awesome - Missing {% endcomment %}
+		<!-- End plugin css for this page -->
+		<!-- inject:css -->
+		<!-- endinject -->
+		<!-- Layout styles -->
+		<link rel="stylesheet" href="{% static 'css/style.css' %}" />
+		<link rel="stylesheet" href="{% static 'css/daterangepicker.css' %}" />
+		<!-- End layout styles -->
+		<link rel="shortcut icon" href="{% static 'images/deloitte.png' %}" />
+	</head>
+	<body>
+		"{% csrf_token %}"
+		<div class="container-scroller">
+			<!-- partial -->
+			<div class="container-fluid page-body-wrapper">
+				<!-- partial -->
+				<!-- <div class="spinner-border text-success" role="status">
+					<span class="sr-only">Loading...</span>
+				</div> -->
+				<div class="main-panel" id="page_content_all">
+					<nav class="navbar p-0 fixed-top d-flex flex-row">
+						<div
+							class="navbar-brand-wrapper d-flex align-items-center justify-content-center"
+							style="background-color: #000000"
+						>
+							<a class="navbar-brand" href="{% url 'homepage' %}"
+								><img
+									src="{% static 'images/deloitte.svg' %}"
+									alt="Company Logo"
+							/></a>
+						</div>
+
+						<div
+							class="navbar-menu-wrapper flex-grow d-flex align-items-stretch"
+						>
+							<ul class="navbar-nav w-100">
+								<li
+									class="nav-item nav-settings d-none d-lg-block"
+								>
+									<a
+										class="nav-link"
+										href="{% url 'Dashboard:index' %}"
+									>
+										Dashboard
+									</a>
+								</li>
+							</ul>
+						</div>
+						<div
+							class="navbar-brand-wrapper d-flex align-items-center justify-content-center"
+							style="background-color: #000000"
+						>
+							<a class="navbar-brand" href="{% url 'homepage' %}"
+								><img
+									src="{% static 'images/RetailCube.png' %}"
+									alt="Retail Cube"
+							/></a>
+						</div>
+
+					</nav>
+					<div class="content-wrapper">
+						<div class="card">
+							<div class="card-body">
+								<div class="row">
+									<div
+										class="col-5-md"
+										style="max-width: 600px"
+										name="file_dashboard"
+									>
+									<form
+										action="{% url 'Dashboard:main_func' %}"
+										id="input_data_form"
+										method="post"
+										enctype="multipart/form-data"
+									>
+										{% csrf_token %}
+
+										<input
+											type="hidden"
+											id="func_form"
+											name="func"
+											val="fetch_data"
+										/>
+										<input
+											class="form-control"
+											type="file"
+											id="inputData"
+											name="file"
+											style="height: 40px;color: white; background-color: #343a40; border: none; padding: 10px 20px;"
+										/>
+									</form>
+									</div>
+									<div class = "col-1"></div>
+									<div
+										class="col-3"
+										style="max-width: 400px;"
+										name="filters_hide"
+										data-bs-toggle="modal"
+										data-bs-target="#filters-modal"
+									>
+									</div>
+									<div
+										class="col-2"
+										style="max-width: 100px;"
+										name="button_hide"
+									>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="card-body"></div>
+						<!--Summarization Table- (Input Data)-->
+						<div class="row">
+							<div class="col-md-12 grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+										<div class="row">
+											<div class="col-12">
+												<h4 class="card-title">
+													Summarized Table - Main Data
+												</h4>
+											</div>
+										</div>
+										<div
+											id="summarizationtable_input"
+											class="table-responsive"
+										></div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+
+						<!--Growth disbursement-->
+						<div class="row">
+							<div class="col-md-5 grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+										<div class="row">
+											<div class="col-6">
+												<h4 class="card-title">
+													Growth disbursement 
+												</h4>
+											</div>
+										</div>
+										<canvas
+											id="Growthdisburestment-linechart"
+											class="transaction-chart"
+										></canvas>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5 grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+										<div class="row">
+											<div class="col-8">
+												<h4 class="card-title">
+													Total disbursement Amount 
+												</h4>
+											</div>
+										</div>
+										<canvas
+											id="Growthdisburestment-piechart"
+											class="transaction-chart"
+										></canvas>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-2 grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+										<div
+											id="Growthdisburestment-summary"
+											class="table-responsive"
+										></div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!--Risk NPA-->
+						<div class="row">
+							<div class="col-md-5 grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+										<div class="row">
+											<div class="col-6">
+												<h4 class="card-title">
+													NPA Growth
+												</h4>
+											</div>
+										</div>
+										<canvas
+											id="RiskNPA-linechart"
+											class="transaction-chart"
+										></canvas>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5 grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+										<div class="row">
+											<div class="col-6">
+												<h4 class="card-title">
+													Total NPA Amount
+												</h4>
+											</div>
+										</div>
+										<canvas
+											id="RiskNPA-piechart"
+											class="transaction-chart"
+										></canvas>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-2 grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+										<div
+											id="RiskNPA-summary"
+											class="table-responsive"
+										></div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!--Filter Options-->
+						<div class="card">
+							<div class="card-body">
+								<div class="row">
+									<div
+										class="col-5"
+										style="max-width: 400px;"
+										name="filters_hide"
+										data-bs-toggle="modal"
+										data-bs-target="#filters-modal"
+									>
+										<button
+											id="viewFilters"
+											class="btn btn-dark"
+											style="height: 40px; width: 150px;"
+										>
+											Select Filters
+										</button>
+									</div>
+									<div class = "col-1"></div>
+									<div
+										class="col-4"
+										style="max-width: 500px;"
+										name="filters_data"
+										data-bs-toggle="modal"
+										data-bs-target="#filters_input-modal"
+									>
+										{% comment %} <button
+											id="viewData"
+											class="btn btn-dark"
+											style="height: 40px; width: 200px;"
+										>
+											View Filtered Data
+										</button> {% endcomment %}
+									</div>
+									<div class = "col-1"></div>
+									<div
+										class="col-2"
+										style="max-width: 100px;"
+										name="button_hide"
+									>
+										<button
+											id="rundecompositiontree"
+											class="btn btn-dark"
+											style = "height: 40px"
+										>
+											Run
+										</button>
+										<button
+											id="runValuations-load"
+											class="btn btn-dark"
+											type="button"
+											style="display: none"
+											disabled
+										>
+											<span
+												class="spinner-border spinner-border-sm"
+												role="status"
+												aria-hidden="true"
+											></span>
+
+											<span class="sr-only"
+												>Loading...</span
+											>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class = "card-body"></div>
+						<!--Summarization Table-->
+						<div class="row">
+							<div class="col-md-12 grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+										<div class="row">
+											<div class="col-12">
+												<h4 class="card-title">
+													Summarized Table - Filtered Data
+												</h4>
+											</div>
+										</div>
+										<div
+											id="summarizationtable"
+											class="table-responsive"
+										></div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!--Growth disbursement-->
+						<div class="row">
+							<div class="col-md-5 grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+										<div class="row">
+											<div class="col-6">
+												<h4 class="card-title">
+													Growth disbursement 
+												</h4>
+											</div>
+										</div>
+										<canvas
+											id="Growthdisburestmentfilter-linechart"
+											class="transaction-chart"
+										></canvas>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5 grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+										<div class="row">
+											<div class="col-8">
+												<h4 class="card-title">
+													Total disbursement Amount 
+												</h4>
+											</div>
+										</div>
+										<canvas
+											id="Growthdisburestmentfilter-piechart"
+											class="transaction-chart"
+										></canvas>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-2 grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+										<div
+											id="Growthdisburestmentfilter-summary"
+											class="table-responsive"
+										></div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!--Risk NPA-->
+						<div class="row">
+							<div class="col-md-5 grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+										<div class="row">
+											<div class="col-6">
+												<h4 class="card-title">
+													NPA Growth
+												</h4>
+											</div>
+										</div>
+										<canvas
+											id="RiskNPAfilter-linechart"
+											class="transaction-chart"
+										></canvas>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5 grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+										<div class="row">
+											<div class="col-6">
+												<h4 class="card-title">
+													Total NPA Amount
+												</h4>
+											</div>
+										</div>
+										<canvas
+											id="RiskNPAfilter-piechart"
+											class="transaction-chart"
+										></canvas>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-2 grid-margin stretch-card">
+								<div class="card">
+									<div class="card-body">
+										<div
+											id="RiskNPAfilter-summary"
+											class="table-responsive"
+										></div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!--Decomposition Chart-->
+						<div class="row">
+							<div class="col-md-12">
+								<div class="card">
+									<div class="card-body" style="height: auto; overflow-y: auto;">
+										<div class="row">
+											<div class="col-12">
+												<div id="decompositionchart" class="transaction-chart">
+												</div>
+												<div id = "summaryTable" class = "table-responsive">
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- Modals -->
+						<!-- Filters -->
+						<div
+							class="modal fade"
+							id="filters-modal"
+							tabindex="-1"
+							aria-labelledby="filters-modalLabel"
+							aria-hidden="true"
+						>
+							<div class="modal-dialog modal-xl">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5
+											class="modal-title"
+											id="filters-modalLabel"
+										>
+											Select the filters to be applied
+										</h5>
+										<button
+											type="button"
+											class="btn-close"
+											data-bs-dismiss="modal"
+											aria-label="Close"
+										></button>
+									</div>
+									<div class="modal-body" style="overflow-y: auto">
+										<div class="row">
+											<div class="col-6" style="z-index: 10; text-align: center;">
+												<h5>Category</h5>
+											</div>
+											<div class="col-6" style="z-index: 10; text-align: center;">
+												<h5>Values</h5>
+											</div>
+										</div>
+										<div class="row" style="margin-bottom: 10px;">
+											<!-- Filter 1 -->
+											<div class="col-6" style="z-index: 10; text-align: center;">
+												<label for="filter_1"></label>
+												<select class="select2-single" name="filter_1" id="filter_1" style="width: 100%; max-width: 300px;">
+													<option value="" selected disabled>
+														Select Category
+													</option>
+												</select>
+											</div>
+											<div class="col-6" style="z-index: 10; text-align: center;">
+												<label for="filter_val1"></label>
+												<select class="select2-single" name="filter_val1" id="filter_val1" style="width: 100%; max-width: 300px;">
+													<option value="" selected disabled>
+														Select Value
+													</option>
+												</select>
+											</div>
+										</div>
+										<div class="row" style="margin-bottom: 10px;">
+											<!-- Filter 2 -->
+											<div class="col-6" style="z-index: 10; text-align: center;">
+												<label for="filter_2"></label>
+												<select class="select2-single" name="filter_2" id="filter_2" style="width: 100%; max-width: 300px;">
+													<option value="" selected disabled>
+														Select Category
+													</option>
+												</select>
+											</div>
+											<div class="col-6" style="z-index: 10; text-align: center;">
+												<label for="filter_val2"></label>
+												<select class="select2-single" name="filter_val2" id="filter_val2" style="width: 100%; max-width: 300px;">
+													<option value="" selected disabled>
+														Select Value
+													</option>
+												</select>
+											</div>
+										</div>
+										<div class="row" style="margin-bottom: 10px;">
+											<!-- Filter 3 -->
+											<div class="col-6" style="z-index: 10; text-align: center;">
+												<label for="filter_3"></label>
+												<select class="select2-single" name="filter_3" id="filter_3" style="width: 100%; max-width: 300px;">
+													<option value="" selected disabled>
+														Select Category
+													</option>
+												</select>
+											</div>
+											<div class="col-6" style="z-index: 10; text-align: center;">
+												<label for="filter_val3"></label>
+												<select class="select2-single" name="filter_val3" id="filter_val3" style="width: 100%; max-width: 300px;">
+													<option value="" selected disabled>
+														Select Value
+													</option>
+												</select>
+											</div>
+										</div>
+									</div>																		
+									<div class="modal-footer d-flex">
+										<button
+											type="button"
+											class="btn btn-secondary btn-dark"
+											data-bs-dismiss="modal"
+										>
+											Close
+										</button>
+										<!-- <button
+											type="button"
+											class="btn btn-primary btn-dark"
+										>
+											Export
+										</button> -->
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- content-wrapper ends -->
+					<!-- partial:partials/_footer.html -->
+					<footer class="footer">
+						<div
+							class="d-sm-flex justify-content-center justify-content-sm-between"
+						>
+							<span
+								class="text-muted d-block text-center text-sm-left d-sm-inline-block"
+								>Copyright © Deloitte Touche Tomatsu LLP</span
+							>
+						</div>
+					</footer>
+					<!-- partial -->
+				</div>
+				<!-- main-panel ends -->
+			</div>
+			<!-- page-body-wrapper ends -->
+		</div>
+		<!-- container-scroller -->
+		<!-- plugins:js -->
+		<script src="{% static 'vendors/js/vendor.bundle.base.js' %}"></script>
+		<!-- endinject -->
+		<!-- Plugin js for this page -->
+		<script src="{% static 'vendors/chart.js/Chart.min.js' %}"></script>
+		<script src="{% static 'vendors/progressbar.js/progressbar.min.js' %}"></script>
+		<script src="{% static 'vendors/jvectormap/jquery-jvectormap.min.js' %}"></script>
+		<script src="{% static 'vendors/jvectormap/jquery-jvectormap-world-mill-en.js' %}"></script>
+		<script src="{% static 'vendors/owl-carousel-2/owl.carousel.min.js' %}"></script>
+		<script
+			src="{% static 'js/jquery.cookie.js' %}"
+			type="text/javascript"
+		></script>
+		<script src="{% static 'vendors/select2/select2.min.js' %}"></script>
+		<!-- End plugin js for this page -->
+		<!-- inject:js -->
+		<script src="{% static 'js/off-canvas.js' %}"></script>
+		<script src="{% static 'js/hoverable-collapse.js' %}"></script>
+		<script src="{% static 'js/misc.js' %}"></script>
+		<script src="{% static 'js/settings.js' %}"></script>
+		<script src="{% static 'js/todolist.js' %}"></script>
+		{% comment %} <script src="{% static 'fontawesomefree/js/all.min.js' %}"></script> {% endcomment %}
+
+		<!-- endinject -->
+		<!-- Custom js for this page -->
+		<!-- <script src="{% static 'js/dashboard.js' %}"></script> -->
+		<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+		<script src="{% static 'js/template.js' %}"></script>
+		<script src="{% static 'js/select2.js' %}"></script>
+		<script src="{% static 'js/moment.min.js' %}"></script>
+		<script src="{% static 'js/daterangepicker.js' %}"></script>
+		<script src="https://d3js.org/d3.v7.min.js"></script>
+		<style>
+			.link {
+				fill: none;
+				stroke: #ccc;
+				stroke-width: 2px;
+			}
+			.node circle {
+				fill: steelblue;
+				stroke: #fff;
+				stroke-width: 2px;
+			}
+			.node text {
+				font: 12px sans-serif;
+				fill: white;
+			}
+			.node rect {
+				fill: steelblue;
+				stroke: #fff;
+				stroke-width: 1px;
+			}
+		</style>
+
+		<!-- <script src="{% static 'js/home.js' %}" type="module"></script> -->
+
+		<script type="module">
+			import { getCookie } from "{% static 'js/ajax_csrf.js' %}";
+			import {
+				date_range_form,
+				single_date_form,
+			} from "{% static 'js/datePicker.js' %}";
+
+			// script.js
+			$(document).ready(function () {
+				function getCookie(name) {
+					var cookieValue = null;
+					if (document.cookie && document.cookie !== '') {
+						var cookies = document.cookie.split(';');
+						for (var i = 0; i < cookies.length; i++) {
+							var cookie = cookies[i].trim();
+							if (cookie.substring(0, name.length + 1) === (name + '=')) {
+								cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+								break;
+							}
+						}
+					}
+					return cookieValue;
+				}
+			
+				var csrftoken = getCookie('csrftoken');
+			
+				function csrfSafeMethod(method) {
+					return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+				}
+						
+				$.ajaxSetup({
+					beforeSend: function (xhr, settings) {
+						if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+							xhr.setRequestHeader("X-CSRFToken", csrftoken);
+						}
+					}
+				});
+
+				function drawTree(data) {
+					const width = document.getElementById('decompositionchart').offsetWidth;
+					const scale = 0.5;
+					const height = 400; // Adjust height as needed
+					let i = 0;
+				
+					const color = d3.scaleOrdinal(d3.schemeCategory10); // Color scale for nodes
+				
+					// Adjust size for tree layout to reduce gap when only one node is open
+					const treeLayout = d3.tree().size([height, width - 100]);
+				
+					const root = d3.hierarchy(data);
+					root.x0 = height / 2;
+					root.y0 = 0;
+				
+					// Collapse all nodes except the root initially
+					root.descendants().forEach(d => {
+						if (d.depth !== 0) {
+							d._children = d.children;
+							d.children = null;
+						}
+					});
+				
+					const svg = d3.select("#decompositionchart")
+						.append("svg")
+						.attr("width", width)
+						.attr("height", height)
+						.append("g")
+						.attr("transform", "translate(40,0)");
+				
+					update(root);
+				
+					function update(source) {
+						const nodes = treeLayout(root).descendants();
+						const links = treeLayout(root).links();
+				
+						// Compute the new tree layout.
+						const node = svg.selectAll(".node")
+							.data(nodes, d => d.id || (d.id = ++i));
+				
+						// Enter any new nodes at the parent's previous position.
+						const nodeEnter = node.enter().append("g")
+							.attr("class", "node")
+							.attr("transform", d => `translate(${source.y0},${source.x0})`)
+							.on("click", handleClick);
+				
+						nodeEnter.append("rect")
+							.attr("width", 100)
+							.attr("height", 20)
+							.attr("x", -50)
+							.attr("y", -10)
+							.attr("fill", d => color(d.depth));
+				
+						nodeEnter.append("text")
+							.attr("dy", 3)
+							.attr("x", 0)
+							.attr("text-anchor", "middle")
+							.text(d => d.data.name)
+							.style("fill", "white");
+				
+						// Transition nodes to their new position.
+						const nodeUpdate = node.merge(nodeEnter).transition()
+							.duration(750)
+							.attr("transform", d => `translate(${d.y},${d.x})`);
+				
+						// Transition exiting nodes to the parent's new position.
+						const nodeExit = node.exit().transition()
+							.duration(750)
+							.attr("transform", d => `translate(${source.y},${source.x})`)
+							.remove();
+				
+						// Update the links.
+						const link = svg.selectAll(".link")
+							.data(links, d => d.target.id);
+				
+						// Enter any new links at the parent's previous position.
+						link.enter().insert("path", "g")
+							.attr("class", "link")
+							.attr("d", d => {
+								const o = { x: source.x0, y: source.y0 };
+								return diagonal(o, o);
+							})
+							.transition()
+							.duration(750)
+							.attr("d", diagonal);
+				
+						// Transition links to their new position.
+						link.transition()
+							.duration(750)
+							.attr("d", diagonal);
+				
+						// Transition exiting nodes to the parent's new position.
+						link.exit().transition()
+							.duration(750)
+							.attr("d", d => {
+								const o = { x: source.x, y: source.y };
+								return diagonal(o, o);
+							})
+							.remove();
+				
+						// Stash the old positions for transition.
+						nodes.forEach(d => {
+							d.x0 = d.x;
+							d.y0 = d.y;
+						});
+					}
+				
+					function diagonal(s, d) {
+						return `M ${s.y} ${s.x}
+								C ${(s.y + d.y) / 2} ${s.x},
+								  ${(s.y + d.y) / 2} ${d.x},
+								  ${d.y} ${d.x}`;
+					}
+				
+					function handleClick(event, d) {
+						if (d.children) {
+							d._children = d.children;
+							d.children = null;
+						} else {
+							d.children = d._children;
+							d._children = null;
+						}
+						update(d);
+						updateSummary(d.data.summary);
+					}
+				
+					// Initial data for summary table
+					const initialSummary = {
+						"Filter Values": data.name,
+						"Average of RAROC": "N/A",
+						"Average of ROE": "N/A",
+						"Sum of Disbursed Amount": "N/A",
+						"Sum of Outstanding Balance": "N/A",
+						"Average of Processing Fee": "N/A",
+						"Sum of Restructed Amount": "N/A",
+						"Sum of Written off Amount": "N/A"
+					};
+				
+					// Update summary table with initial data
+					updateSummary(initialSummary);
+				
+					// Function to update the summary table
+					function updateSummary(summaryData) {
+						const summaryTableDiv = document.getElementById("summaryTable");
+						if (!summaryTableDiv) {
+							console.error("Element with ID 'summaryTable' not found.");
+							return;
+						}
+				
+						summaryTableDiv.innerHTML = ""; // Clear previous content
+				
+						const table = document.createElement("table");
+						table.className = "table table-striped"; // Add Bootstrap table classes
+				
+						const tableBody = document.createElement("tbody");
+						const tableHead = document.createElement("thead");
+						const headRow = tableHead.insertRow();
+				
+						for (const key in summaryData) {
+							const cell = document.createElement("th");
+							const cellText = document.createTextNode(key);
+							cell.appendChild(cellText);
+							headRow.appendChild(cell);
+						}
+				
+						table.appendChild(tableHead);
+				
+						const row = document.createElement("tr");
+						for (const key in summaryData) {
+							const cell = document.createElement("td");
+							cell.textContent = summaryData[key];
+							row.appendChild(cell);
+						}
+						tableBody.appendChild(row);
+				
+						table.appendChild(tableBody);
+						summaryTableDiv.appendChild(table);
+					}
+				}
+														
+				
+
+				var url = "{% url 'Dashboard:main_func' %}";
+				var token = `{{ csrf_token }}`;
+				$("#filters-modal .select2-single").select2({
+					dropdownParent: $("#filters-modal"),
+				});
+				var barChartOptions = {
+					tooltips: {
+						enabled: true,
+					},
+					hover: {
+						animationDuration: 0,
+					},
+					indexAxis: "y",
+					scales: {
+						xAxes: [
+							{
+								ticks: {
+									beginAtZero: true,
+									fontFamily: "'Open Sans Bold', sans-serif",
+									fontSize: 11,
+								},
+								scaleLabel: {
+									display: false,
+								},
+								gridLines: {},
+								stacked: false,
+							},
+						],
+						yAxes: [
+							{
+								gridLines: {
+									display: false,
+									color: "#fff",
+									zeroLineColor: "#fff",
+									zeroLineWidth: 0,
+								},
+								ticks: {
+									fontFamily: "'Open Sans Bold', sans-serif",
+									fontSize: 11,
+								},
+								stacked: true,
+							},
+						],
+					},
+					legend: {
+						display: true,
+					},
+
+					pointLabelFontFamily: "Quadon Extra Bold",
+					scaleFontFamily: "Quadon Extra Bold",
+				};
+
+				
+				$('#inputData').on('change', function(event) {
+					$("#func_form").val("fetch_data").trigger("change");
+					console.log("Hellooooo")
+					console.log(document.getElementById("input_data_form"));
+				
+					var formData = new FormData(document.getElementById("input_data_form"));
+				
+					var csrfToken = token;
+					formData.append('csrfmiddlewaretoken', csrfToken);
+				
+					console.log(formData);
+				
+					// Start the chain of AJAX calls
+					$.ajax({
+						url: url,
+						type: 'POST',
+						data: formData,
+						processData: false,
+						contentType: false,
+						success: function(context) {
+							var options = JSON.parse(context)["options"]["filter_1"];
+							var input_table = JSON.parse(context)["options"]["input_table"];
+							$("#summarizationtable_input").empty()
+							$("#summarizationtable_input").append(input_table);
+
+							var dis_line = JSON.parse(context)["options"]["disbursement_line"];
+							var plot_data_dis = {
+								labels: dis_line["x"],
+								datasets: [
+									{
+										label: "Exposure",
+										data: dis_line["y"],
+										pointBackgroundColor: "#00d25b", // Color of the dots
+										pointBorderColor: "#00d25b", // Border color of the dots
+										pointRadius: 5, // Size of the dots
+										pointHoverRadius: 7, // Size of the dots when hovered
+										fill: false, // Ensure the line is not filled
+										borderColor: "#00d25b", // Color of the line
+										borderWidth: 1, // Width of the line
+									},
+								],
+							};
+
+							var canvas = $("#Growthdisburestment-linechart").get(0).getContext("2d");
+							var chart = new Chart(canvas, {
+								type: "line",
+								data: plot_data_dis,
+								options: {
+									legend: {
+										display: false, // Add this line to remove the legend
+									},
+									scales: {
+										x: {
+											title: {
+												display: true,
+												text: 'Loan Type'
+											}
+										},
+										y: {
+											title: {
+												display: true,
+												text: 'Growth in Disbursed Amount'
+											}
+										}
+									}
+								},
+								// plugins: transactionhistoryChartPlugins,
+							});
+							var piechart_dis = JSON.parse(context)["options"]["disbursement_pie"];
+							var AllData = {
+								labels: piechart_dis["labels"],
+								datasets: [
+									{
+										label: "Loan Type",
+										data: piechart_dis["values"],
+										backgroundColor: [
+											"#00d25b",
+											"#82CD47",
+											"#ffffff",
+											"#2B3467",
+											"#009EFF",
+											"#00688B",
+											"#4EB1BA"
+										],
+										hoverBackgroundColor: "#B33F40",
+									},
+								],
+							};
+							var AllOptions = {
+								responsive: true,
+								maintainAspectRatio: true,
+								segmentShowStroke: false,
+								cutoutPercentage: 70,
+								elements: {
+									arc: {
+										borderWidth: 0,
+									},
+								},
+								legend: {
+									display: true,
+									position: "right",
+									labels: {
+										fontColor: 'white',
+										fontSize: 14,
+									}
+								},
+								tooltips: {
+									enabled: true,
+								},
+							};
+							var AllChartCanvas = $("#Growthdisburestment-piechart").get(0).getContext("2d");
+							var AllChart = new Chart(AllChartCanvas, {
+								type: "pie",
+								data: AllData,
+								options: AllOptions,
+							});
+
+							var dis_summary = JSON.parse(context)["options"]["disbursement_summary"];
+							$("#Growthdisburestment-summary").empty();
+							$("#Growthdisburestment-summary").append(dis_summary);
+
+							// Risk NPA
+							var risk_line = JSON.parse(context)["options"]["risk_line"];
+							var plot_data_dis = {
+								labels: risk_line["x"],
+								datasets: [
+									{
+										label: "Exposure",
+										data: risk_line["y"],
+										pointBackgroundColor: "#00d25b", // Color of the dots
+										pointBorderColor: "#00d25b", // Border color of the dots
+										pointRadius: 5, // Size of the dots
+										pointHoverRadius: 7, // Size of the dots when hovered
+										fill: false, // Ensure the line is not filled
+										borderColor: "#00d25b", // Color of the line
+										borderWidth: 1, // Width of the line
+									},
+								],
+							};
+
+							var canvas = $("#RiskNPA-linechart").get(0).getContext("2d");
+							var chart = new Chart(canvas, {
+								type: "line",
+								data: plot_data_dis,
+								options: {
+									legend: {
+										display: false, // Add this line to remove the legend
+									},
+									scales: {
+										x: {
+											title: {
+												display: true,
+												text: 'Loan Type'
+											}
+										},
+										y: {
+											title: {
+												display: true,
+												text: 'Growth in Risk-NPA'
+											}
+										}
+									}
+								},
+								// plugins: transactionhistoryChartPlugins,
+							});
+							var piechart_risk = JSON.parse(context)["options"]["risk_pie"];
+							var AllData = {
+								labels: piechart_risk["labels"],
+								datasets: [
+									{
+										label: "Loan Type",
+										data: piechart_risk["values"],
+										backgroundColor: [
+											"#00d25b",
+											"#82CD47",
+											"#ffffff",
+											"#2B3467",
+											"#009EFF",
+											"#00688B",
+											"#4EB1BA"
+										],
+										hoverBackgroundColor: "#B33F40",
+									},
+								],
+							};
+							var AllOptions = {
+								responsive: true,
+								maintainAspectRatio: true,
+								segmentShowStroke: false,
+								cutoutPercentage: 70,
+								elements: {
+									arc: {
+										borderWidth: 0,
+									},
+								},
+								legend: {
+									display: true,
+									position: "right",
+									labels: {
+										fontColor: 'white',
+										fontSize: 14,
+									}
+								},
+								tooltips: {
+									enabled: true,
+								},
+							};
+							var AllChartCanvas = $("#RiskNPA-piechart").get(0).getContext("2d");
+							var AllChart = new Chart(AllChartCanvas, {
+								type: "pie",
+								data: AllData,
+								options: AllOptions,
+							});
+
+							var risk_summary = JSON.parse(context)["options"]["risk_summary"];
+							$("#RiskNPA-summary").empty();
+							$("#RiskNPA-summary").append(risk_summary);
+
+							console.log("Filter 1 options:", options);  // Log the options
+				
+							$("#filter_1").empty();
+							$("#filter_1").append(options);
+				
+							// When filter_1 is changed, populate filter_val1
+							$("#filter_1").on("change", function() {
+								var filter1Value = $("#filter_1").val();
+								$.ajax({
+									url: url,
+									type: 'POST',
+									data: {
+										csrfmiddlewaretoken: token,
+										func: 'populate_filter_val1',
+										filter_1_value: filter1Value,
+									},
+									success: function(context) {
+										var values = JSON.parse(context)["options"]["values_1"];
+										console.log("Filter 1 values:", JSON.parse(context));  // Log the values
+										$("#filter_val1").empty();
+										$("#filter_val1").append(values);
+				
+										// When filter_val1 is changed, populate filter_2
+										$("#filter_val1").on("change", function() {
+											$.ajax({
+												url: url,
+												type: 'POST',
+												data: {
+													csrfmiddlewaretoken: token,
+													func: 'populate_filter2',
+													filter_1_value: filter1Value,
+													filter_1_filtering: $("#filter_val1").val()
+												},
+												success: function(context) {
+													var options = JSON.parse(context)["options"]["filter_2"]; 
+													$("#filter_2").empty();
+													$("#filter_2").append(options);
+				
+													// When filter_2 is changed, populate filter_val2
+													$("#filter_2").on("change", function() {
+														var filter2Value = $("#filter_2").val();
+														$.ajax({
+															url: url,
+															type: 'POST',
+															data: {
+																csrfmiddlewaretoken: token,
+																func: 'populate_filter_val2',
+																filter_2_value: filter2Value,
+															},
+															success: function(context) {
+																var values = JSON.parse(context)["options"]["values_2"];
+																$("#filter_val2").empty();
+																$("#filter_val2").append(values);
+				
+																// When filter_val2 is changed, populate filter_3
+																$("#filter_val2").on("change", function() {
+																	$.ajax({
+																		url: url,
+																		type: 'POST',
+																		data: {
+																			csrfmiddlewaretoken: token,
+																			func: 'populate_filter3',
+																			filter_2_filtering: $("#filter_val2").val(),
+																			filter_2_value: filter2Value,
+																		},
+																		success: function(context) {
+																			var options = JSON.parse(context)["options"]["filter_3"];
+																			console.log("Hello");
+																			console.log($("#filter_val2").val());
+																			$("#filter_3").empty();
+																			$("#filter_3").append(options);
+				
+																			// When filter_3 is changed, populate filter_val3
+																			$("#filter_3").on("change", function() {
+																				var filter3Value = $("#filter_3").val();
+																				$.ajax({
+																					url: url,
+																					type: 'POST',
+																					data: {
+																						csrfmiddlewaretoken: token,
+																						func: 'populate_filter_val3',
+																						filter_3_value: filter3Value,
+																					},
+																					success: function(context) {
+																						var values = JSON.parse(context)["options"]["values_3"];
+																						console.log("Filter 3 values:", values);  // Log the values
+																						$("#filter_val3").empty();
+																						$("#filter_val3").append(values);
+																					},
+																					error: function(xhr, status, error) {
+																						console.error("Error fetching filter_val3 data:", error);
+																					}
+																				});
+																			});
+																		},
+																		error: function(xhr, status, error) {
+																			console.error("Error fetching filter 3 data:", error);
+																		}
+																	});
+																});
+															},
+															error: function(xhr, status, error) {
+																console.error("Error fetching filter_val2 data:", error);
+															}
+														});
+													});
+												},
+												error: function(xhr, status, error) {
+													console.error("Error fetching filter 2 data:", error);
+												}
+											});
+										});
+									},
+									error: function(xhr, status, error) {
+										console.error("Error fetching filter_val1 data:", error);
+									}
+								});
+							});
+						},
+						error: function(xhr, status, error) {
+							console.error("File upload error:", error);
+						}
+					});
+				});
+				
+
+				$("#rundecompositiontree").on("click", function () {
+					$.ajax({
+						url: url,
+						type: "POST",
+						data: {
+							csrfmiddlewaretoken: token,
+							func: "decompositionchart_tree",
+							filter_1: $("#filter_1").val(),
+							filter_2: $("#filter_2").val(),
+							filter_3: $("#filter_3").val(),
+
+							filter_1_val: $("#filter_val1").val(),
+							filter_2_val: $("#filter_val2").val(),
+							filter_3_val: $("#filter_val3").val(),
+						},
+						success: function (context) {
+							console.log(context);
+							var context = JSON.parse(context);
+							drawTree(context["options"]["tree"]);
+							$("#summarizationtable").empty()
+							$("#summarizationtable").append(
+									context["final_table"]);
+
+							var dis_line = context["options"]["disbursement_line"];
+							var plot_data_dis = {
+								labels: dis_line["x"],
+								datasets: [
+									{
+										label: "Exposure",
+										data: dis_line["y"],
+										pointBackgroundColor: "#00d25b", // Color of the dots
+										pointBorderColor: "#00d25b", // Border color of the dots
+										pointRadius: 5, // Size of the dots
+										pointHoverRadius: 7, // Size of the dots when hovered
+										fill: false, // Ensure the line is not filled
+										borderColor: "#00d25b", // Color of the line
+										borderWidth: 1, // Width of the line
+									},
+								],
+							};
+
+							var canvas = $("#Growthdisburestmentfilter-linechart").get(0).getContext("2d");
+							var chart = new Chart(canvas, {
+								type: "line",
+								data: plot_data_dis,
+								options: {
+									legend: {
+										display: false, // Add this line to remove the legend
+									},
+									scales: {
+										x: {
+											title: {
+												display: true,
+												text: 'Loan Type'
+											}
+										},
+										y: {
+											title: {
+												display: true,
+												text: 'Growth in Disbursed Amount'
+											}
+										}
+									}
+								},
+								// plugins: transactionhistoryChartPlugins,
+							});
+							var piechart_dis = context["options"]["disbursement_pie"];
+							var AllData = {
+								labels: piechart_dis["labels"],
+								datasets: [
+									{
+										label: "Loan Type",
+										data: piechart_dis["values"],
+										backgroundColor: [
+											"#00d25b",
+											"#82CD47",
+											"#ffffff",
+											"#2B3467",
+											"#009EFF",
+											"#00688B",
+											"#4EB1BA"
+										],
+										hoverBackgroundColor: "#B33F40",
+									},
+								],
+							};
+							var AllOptions = {
+								responsive: true,
+								maintainAspectRatio: true,
+								segmentShowStroke: false,
+								cutoutPercentage: 70,
+								elements: {
+									arc: {
+										borderWidth: 0,
+									},
+								},
+								legend: {
+									display: true,
+									position: "right",
+									labels: {
+										fontColor: 'white',
+										fontSize: 14,
+									}
+								},
+								tooltips: {
+									enabled: true,
+								},
+							};
+							var AllChartCanvas = $("#Growthdisburestmentfilter-piechart").get(0).getContext("2d");
+							var AllChart = new Chart(AllChartCanvas, {
+								type: "pie",
+								data: AllData,
+								options: AllOptions,
+							});
+
+							var dis_summary = context["options"]["disbursement_summary"];
+							$("#Growthdisburestmentfilter-summary").empty();
+							$("#Growthdisburestmentfilter-summary").append(dis_summary);
+
+							// Risk NPA
+							var risk_line = context["options"]["risk_line"];
+							var plot_data_dis = {
+								labels: risk_line["x"],
+								datasets: [
+									{
+										label: "Exposure",
+										data: risk_line["y"],
+										pointBackgroundColor: "#00d25b", // Color of the dots
+										pointBorderColor: "#00d25b", // Border color of the dots
+										pointRadius: 5, // Size of the dots
+										pointHoverRadius: 7, // Size of the dots when hovered
+										fill: false, // Ensure the line is not filled
+										borderColor: "#00d25b", // Color of the line
+										borderWidth: 1, // Width of the line
+									},
+								],
+							};
+
+							var canvas = $("#RiskNPAfilter-linechart").get(0).getContext("2d");
+							var chart = new Chart(canvas, {
+								type: "line",
+								data: plot_data_dis,
+								options: {
+									legend: {
+										display: false, // Add this line to remove the legend
+									},
+									scales: {
+										x: {
+											title: {
+												display: true,
+												text: 'Loan Type'
+											}
+										},
+										y: {
+											title: {
+												display: true,
+												text: 'Growth in Risk-NPA'
+											}
+										}
+									}
+								},
+								// plugins: transactionhistoryChartPlugins,
+							});
+							var piechart_risk = context["options"]["risk_pie"];
+							var AllData = {
+								labels: piechart_risk["labels"],
+								datasets: [
+									{
+										label: "Loan Type",
+										data: piechart_risk["values"],
+										backgroundColor: [
+											"#00d25b",
+											"#82CD47",
+											"#ffffff",
+											"#2B3467",
+											"#009EFF",
+											"#00688B",
+											"#4EB1BA"
+										],
+										hoverBackgroundColor: "#B33F40",
+									},
+								],
+							};
+							var AllOptions = {
+								responsive: true,
+								maintainAspectRatio: true,
+								segmentShowStroke: false,
+								cutoutPercentage: 70,
+								elements: {
+									arc: {
+										borderWidth: 0,
+									},
+								},
+								legend: {
+									display: true,
+									position: "right",
+									labels: {
+										fontColor: 'white',
+										fontSize: 14,
+									}
+								},
+								tooltips: {
+									enabled: true,
+								},
+							};
+							var AllChartCanvas = $("#RiskNPAfilter-piechart").get(0).getContext("2d");
+							var AllChart = new Chart(AllChartCanvas, {
+								type: "pie",
+								data: AllData,
+								options: AllOptions,
+							});
+
+							var risk_summary = context["options"]["risk_summary"];
+							$("#RiskNPAfilter-summary").empty();
+							$("#RiskNPAfilter-summary").append(risk_summary);
+						}
+							});
+						})
+
+
+				$("#viewInsights").on("click", function () {
+					$.ajax({
+						url: url,
+						type: "POST",
+						data: {
+							csrfmiddlewaretoken: token,
+							func: "view_insights",
+							data: JSON.stringify({
+								date: $("#dateSelect").val(),
+							}),
+						},
+						success: function (context) {
+							var context = JSON.parse(context);
+							var data = context["data"];
+							var data_bar = context["data_bar"]
+							var content = context["content"];
+							$("#ViewTopInsights-paragraph").empty();
+							$("#ViewTopInsights-paragraph").append(content);
+							if ($("#AllInsights-chart").length) {
+								var AllData = {
+									labels: data["labels"],
+									datasets: [
+										{
+											label: "Exposure",
+											data: data["values"],
+											backgroundColor: [
+												"#00d25b",
+												"#82CD47",
+												"#ffffff",
+												"#2B3467",
+												"#009EFF",
+											],
+											hoverBackgroundColor: "#B33F40",
+										},
+									],
+								};
+								var AllOptions = {
+									responsive: true,
+									maintainAspectRatio: true,
+									segmentShowStroke: false,
+									cutoutPercentage: 70,
+									elements: {
+										arc: {
+											borderWidth: 0,
+										},
+									},
+									legend: {
+										display: true,
+										position: "right",
+										labels: {
+											fontColor: 'white',
+											fontSize: 14,
+										}
+									},
+									tooltips: {
+										enabled: true,
+									},
+								};
+								var AllChartCanvas = $("#AllInsights-chart").get(0).getContext("2d");
+								var AllChart = new Chart(AllChartCanvas, {
+									type: "pie",
+									data: AllData,
+									options: AllOptions,
+								});
+							}
+							var plot_data = {labels: data_bar["labels"],
+			                                     datasets: [{
+			                                     label: "Exposure",
+			                                     data: data_bar["values"],
+			                                     backgroundColor: [
+			                                         "#00d25b",
+			                                         "#82CD47",
+			                                         "#ffffff",
+			                                         "#2B3467",
+			                                         "#009EFF",
+													 "#00d25b",
+			                                         "#82CD47",
+			                                         "#ffffff",
+			                                         "#2B3467",
+			                                         "#009EFF",
+
+			                                     ],
+			                                     hoverBackgroundColor: "#B33F40",},
+			                                     ],
+			                                 };
+			                                 var canvas = $("#AllInsights_bar-chart")
+			                                    .get(0)
+			                                    .getContext("2d");
+			                                var chart = new Chart(canvas, {
+			                                    type: "bar",
+			                                    data: plot_data,
+			                                    options: {
+			                                        legend: {
+			                                             display: false, // Add this line to remove the legend
+			                                        },
+			                                    },
+			                                    });
+						},
+					});
+				});
+			});
+		</script>
+		<!-- <script src="{% static 'js/ajax_csrf.js' %}"></script> -->
+		<!-- End custom js for this page -->
+	</body>
+</html>
