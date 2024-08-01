@@ -83,11 +83,11 @@
                                 alt="Retail Cube" /></a>
                     </div>
                 </nav>
-                <div class="content-wrapper">
-                    <div class="card">
+                <div class="content-wrapper" style="padding: 0.1px;">
+                    <div class="card" style="padding: 0.1px;">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-5-md" style="max-width: 600px" name="file_dashboard">
+                                <!-- <div class="col-5-md" style="max-width: 600px" name="file_dashboard">
                                     <form action="{% url 'Dashboard:main_func' %}" id="input_data_form" method="post" enctype="multipart/form-data">
                                         {% csrf_token %}
                                         <input type="hidden" id="func_form" name="func" value="fetch_data" />
@@ -103,7 +103,116 @@
                                         <button type="button" id="runButton" class="btn btn-dark"
                                             style="height: 40px; margin-top: 10px;">Run</button>
                                     </form>
+                                </div> -->
+
+                                <div class="col-5-md" style="max-width: 600px" name="file_dashboard">
+                                    <div class="row">
+                                        <div class="col-md-12" name="file_dashboard">
+                                            <form action="{% url 'Dashboard:main_func' %}" id="input_data_form" method="post" enctype="multipart/form-data">
+                                                {% csrf_token %}
+                                                <input type="hidden" id="func_form" name="func" value="fetch_data" />
+                                                <div class="d-flex align-items-center">
+                                                    <label for="inputData" class="btn btn-dark" style="height: 40px; min-width: 120px; margin-right: 10px;">Choose File</label>
+                                                    <input class="form-control" type="file" id="inputData" name="file" style="display: none;" onchange="displayFileName()" />
+                                                    <span id="fileName" style="color: white; margin-right: 50px; min-width: 200px;">No file chosen</span>
+                                                    <input type="text" id="dateFrom" class="form-control" name="dateFrom" placeholder="Date From" 
+                                                    style="height: 40px; margin-left: 10px; color:white; background-color: white; border: none; min-width: 160px" 
+                                                    onfocus="(this.type='date'); this.placeholder=''" 
+                                                    onblur="(this.type='text'); this.placeholder='Date From'" />
+                                                    <input type="text" id="dateTo" class="form-control" name="dateTo" placeholder="Date To" 
+                                                    style="height: 40px; margin-left: 10px; color: white; background-color: white; border: none; min-width: 160px" 
+                                                    onfocus="(this.type='date'); this.placeholder=''" 
+                                                    onblur="(this.type='text'); this.placeholder='Date To'" />
+                                                    <select class="form-control" id="categoryDropdown" name="category" style="height: 40px; margin-left: 10px; margin-right: 100px; color: white; background-color: #343a40; border: none; min-width: 160px">
+                                                        <option value="NA">Select Metric</option>
+                                                        <option value="quality">Quality</option>
+                                                        <option value="operation">Operation</option>
+                                                        <option value="performance">Performance</option>
+                                                    </select>
+                                                    <button type="button" id="runButton" class="btn btn-dark" style="height: 40px; margin-right:40px">Run</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                        
+                                    
+                                
+                                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                                <script>
+                                    function displayFileName() {
+                                        const input = document.getElementById('inputData');
+                                        const fileNameSpan = document.getElementById('fileName');
+                                        fileNameSpan.textContent = input.files.length > 0 ? input.files[0].name : 'No file chosen';
+                                    }
+
+                                    document.getElementById('runButton').addEventListener('click', function() {
+                                        $.ajax({
+                                            url: url, // Replace with your server endpoint
+                                            type: 'GET', // or 'POST' depending on your needs
+                                            success: function(response) {
+                                                console.log('Success:', response);
+                                                // Add your custom functionality here
+                                            },
+                                            error: function(error) {
+                                                console.error('Error:', error);
+                                                // Handle the error here
+                                            }
+                                        });
+                                    });
+
+                                    document.getElementById('dateFrom').addEventListener('focus', function() {
+                                        this.type = 'date';
+                                        this.placeholder = '';
+                                    });
+
+                                    document.getElementById('dateFrom').addEventListener('blur', function() {
+                                        this.type = 'text';
+                                        this.placeholder = 'Date From';
+                                    });
+                                </script>
+
+                                <!-- RAHHHHHHHHHHHHHH -->
+                                <!-- <div class="card-body" style="padding: 0.1px;">
+                                    <div class="row">
+                                        <div class="col-md-12" name="file_dashboard">
+                                            <form action="{% url 'Dashboard:main_func' %}" id="input_data_form" method="post" enctype="multipart/form-data">
+                                                {% csrf_token %}
+                                                <input type="hidden" id="func_form" name="func" value="fetch_data" />
+                                                <div class="d-flex align-items-center">
+                                                    <label for="inputData" class="btn btn-dark" style="height: 40px; margin-right: 10px;">Choose File</label>
+                                                    <input class="form-control" type="file" id="inputData" name="file" style="display: none;" onchange="displayFileName()" />
+                                                    <span id="fileName" style="color: white; margin-right: 10px;">No file chosen</span>
+                                                    <input type="date" id="dateFrom" class="form-control" name="dateFrom" placeholder="Date From" 
+                           style="height: 40px; margin-left: 10px; color: white; background-color: #86BC25; border: none;" onfocus="(this.type='date')" onblur="(this.type='text')" />
+                                                    <input type="date" id="dateTo" class="form-control" name="dateTo" placeholder="Date To" style="height: 40px; margin-left: 10px; color: white; background-color: #343a40; border: none;" onfocus="(this.type='date')" onblur="(this.type='text')" />
+                                                    <select class="form-control" id="categoryDropdown" name="category" style="height: 40px; margin-left: 10px; color: white; background-color: #343a40; border: none;">
+                                                        <option value="NA">Select Growth</option>
+                                                        <option value="quality">Quality</option>
+                                                        <option value="operation">Operation</option>
+                                                        <option value="performance">Performance</option>
+                                                    </select>
+                                                    <button type="button" id="runButton" class="btn btn-dark" style="height: 40px; margin-left: 10px;">Run</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
+                                
+                                <script>
+                                    function displayFileName() {
+                                        const input = document.getElementById('inputData');
+                                        const fileNameSpan = document.getElementById('fileName');
+                                        fileNameSpan.textContent = input.files.length > 0 ? input.files[0].name : 'No file chosen';
+                                    }
+                                </script>
+                                         
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div> -->
+
+                                <!-- RAHHHHHHHHHHHHHHHH -->
+                                
                                 <div class="col-1"></div>
                                 <div class="col-3" style="max-width: 400px;" name="filters_hide"
                                     data-bs-toggle="modal" data-bs-target="#filters-modal">
@@ -575,6 +684,8 @@
                     }
                 }
             });
+
+
 
             function drawTree(data) {
                 const width = document.getElementById('decompositionchart').offsetWidth;
